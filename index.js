@@ -103,14 +103,19 @@ app.get('/tasks', (req, res) => {
 
 //  GET /tasks/:id - Get single task ---
 app.get('/tasks/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const task = tasks.find(t => t.id === id);
-
-  if (!task) {
-    return res.status(404).json({ error: `Task ${id} not found` });
-  }
-
-  res.json(task);
+  db.get('SELECT * FROM users WHERE id = ?', [req.params.id], (err, task) => {
+    if (err) {
+      console.error('Error fetching task:', err.message);
+      res.status(500).json({ error: 'Error fetching task' });
+    }
+    if (!task) {
+      res.status(404).json({ error: `Task ${req.params.id} not found` });
+    } else {
+      res.json(task);
+    }
+    
+  })
+  
 });
 
 //  POST /tasks - Create a new task ---
