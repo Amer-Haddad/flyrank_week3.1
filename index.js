@@ -128,14 +128,15 @@ app.post('/tasks', (req, res) => {
     });
   }
 
-  const newTask = {
-    id: ++idAtutoGenerate,
-    title: title.trim(),
-    done: false
-  };
-
-  tasks.push(newTask);
-  res.status(201).json(newTask);
+  const newTask = { title, done: false };
+  db.run('INSERT INTO users (title, done) VALUES (?, ?)', [newTask.title, newTask.done], function (err) {
+    if (err) {
+      console.error('Error inserting task:', err.message);
+      res.status(500).json({ error: 'Error inserting task' });
+    } else {
+      res.status(201).json(newTask);
+    }
+  });
 });
 
 //  PUT /tasks/:id - Update a task ---
